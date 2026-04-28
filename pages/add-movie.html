@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Movie</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #f4f4f4;
+        }
+        .navbar {
+            background-color: #FF69B4;
+            padding: 1rem;
+            text-align: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 500px;
+            margin: 3rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-bottom: 1.5rem;
+            color: #333;
+            border-bottom: 2px solid #FF69B4;
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+        form div {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #FF69B4;
+            box-shadow: 0 0 0 2px rgba(255,105,180,0.2);
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #FF69B4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="../index.php">Home</a>
+        <a href="movie-list.html">Movies</a>
+        <a href="add-movie.html">Add Movie</a>
+    </div>
+
+    <div class="container">
+        <h2>Add New Movie</h2>
+        
+        <form id="addMovieForm">
+            <div>
+                <label>Movie Title</label>
+                <input type="text" name="title" required>
+            </div>
+            <div>
+                <label>Type</label>
+                <select name="type" required>
+                    <option value="">-- Select Genre --</option>
+                    <option value="Action">Action</option>
+                    <option value="Comedy">Comedy</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Horror">Horror</option>
+                    <option value="Sci-Fi">Sci-Fi</option>
+                </select>
+            </div>
+            <div>
+                <label>Rating (0-10)</label>
+                <input type="number" name="rating" min="0" max="10" step="0.1" required>
+            </div>
+            <button type="submit">Save</button>
+        </form>
+    </div>
+
+<script>
+document.getElementById('addMovieForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    let formData = new FormData(this);
+
+    try {
+        let res = await fetch('/teamwork/add-movie.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        let text = await res.text();
+
+        if (res.ok && text.trim() === 'SUCCESS') {
+            alert('Movie added successfully!');
+            window.location.href = 'movie-list.html';
+        } else {
+            alert('Failed to add movie: ' + text);
+        }
+    } catch (error) {
+        alert('Network error: ' + error.message);
+    }
+});
+</script>
+</body>
+</html>

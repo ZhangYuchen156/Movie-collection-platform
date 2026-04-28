@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie List</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .movie-item{background:#fff;padding:2rem;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);margin-bottom:1.5rem}
+        .movie-item h3{font-size:1.5rem;margin-bottom:1rem;color:#222}
+        .movie-item p{font-size:1.1rem;margin-bottom:0.5rem;color:#444}
+        .btn-group{display:flex;gap:1rem;margin-top:1.5rem}
+        .btn-edit{background:#FF69B4;color:#fff;border:none;padding:0.5rem 1rem;border-radius:6px;text-decoration:none;font-weight:600}
+        .btn-delete{background:#FF87B3;color:#fff;border:none;padding:0.5rem 1rem;border-radius:6px;text-decoration:none;font-weight:600}
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="../index.php">Home</a>
+        <a href="login.html">Login</a>
+        <a href="register.html">Register</a>
+        <a href="movie-list.html">Movies</a>
+        <a href="add-movie.html">Add Movie</a>
+    </div>
+    <div class="container">
+        <h2>My Movie Collection</h2>
+
+        <div id="movie-list"></div>
+
+    </div>
+
+<script>
+window.onload = async function() {
+    const res = await fetch("../get_movie_list.php");
+    const movies = await res.json();
+    const container = document.getElementById("movie-list");
+
+    if (movies.length === 0) {
+        container.innerHTML = "<p>No movies added yet.</p>";
+        return;
+    }
+
+    movies.forEach(m => {
+        let item = `
+        <div class="movie-item">
+            <h3>${m.title}</h3>
+            <p>Type: ${m.type}</p>
+            <p>Rating: ${m.rating}</p>
+            <div class="btn-group">
+
+                <a href="edit_movie.php?id=${m.id}" style="background:#FF69B4; color:white; padding:8px 16px; border-radius:6px; text-decoration:none;">Edit</a>
+
+                <a href="javascript:deleteMovie(${m.id})" class="btn-delete">Delete</a>
+            </div>
+        </div>
+        `;
+        container.innerHTML += item;
+    });
+};
+
+async function deleteMovie(id) {
+    if (!confirm("Delete this movie?")) return;
+
+    try {
+        let res = await fetch("../delete_movie.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "id=" + id
+        });
+        let text = await res.text();
+
+        if (text.trim() === "SUCCESS") {
+            alert("Deleted successfully!");
+            location.reload();
+        } else {
+            alert("Delete failed: " + text);
+        }
+    } catch (e) {
+        alert("Error");
+    }
+}
+</script>
+</body>
+</html>
